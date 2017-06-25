@@ -1,0 +1,1 @@
+# hatena_api_test
