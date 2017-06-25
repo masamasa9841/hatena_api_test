@@ -132,10 +132,10 @@ function add_url (){//urlを追加
   var rss_url = "http://b.hatena.ne.jp/entrylist?url=" + url + "&mode=rss&sort=eid";
   var response = UrlFetchApp.fetch(rss_url);
   Logger.log(response);
-  var xml = XmlService.parse(response);
-  var entries = xml.getChildren('item', atom);
-  //var xml = Xml.parse(response.getContentText(), atom);
-  Logger.log(entries);
+    var xml =XmlService.createElement(response, atom);
+  
+  //var entries = xml.getChildren('item', atom);
+  Logger.log(xml);
 }
 
 
