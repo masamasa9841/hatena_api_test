@@ -126,16 +126,29 @@ Hatena.prototype.send_mail = function (){//メールを送る
   MailApp.sendEmail(this.mail, mail_title, mes);
 }
 
-function add_url (){//urlを追加
+function add_url (){//urlを自動で追加
   var url = "http://routecompass.net";
-  var atom = "http://purl.org/rss/1.0/";
-  var rss_url = "http://b.hatena.ne.jp/entrylist?url=" + url + "&mode=rss&sort=eid";
-  var response = UrlFetchApp.fetch(rss_url);
-  Logger.log(response);
-    var xml =XmlService.createElement(response, atom);
-  
-  //var entries = xml.getChildren('item', atom);
-  Logger.log(xml);
+  var atom = XmlService.getNamespace('http://purl.org/rss/1.0/');
+  var feed_url = "http://b.hatena.ne.jp/entrylist?url=" + url + "&mode=rss&sort=eid";
+  var document = XmlService.parse(UrlFetchApp.fetch(feed_url).getContentText());
+  var items = document.getRootElement().getChildren('item', atom);
+  var hatebu_url = [];
+  for(var i = 0; i < items.length; i++) {
+  hatebu_url.push(items[i].getChildText("link", atom));
+  }
+
+  var bk = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = bk.getSheetByName("hatena"); //hatenaというシートを取得
+  var last_row = sheet.getLastRow();  //最終行を検出
+  var sheet_url = [];
+  for (var i = 2; i <= last_row; i++) sheet_url.push(sheet.getRange(i,1).getValue());
+  for (var i = 0; i < hatebu_url.length; i++) {
+    if (sheet_url.indexOf(hatebu_url[i]) == -1) {
+    sheet.getRange(sheet.getLastRow() + 1, 1).setValue(hatebu_url[i]);//シートにurlがなかったら追加する
+    }
+      
+  }
+  //sheet_url.
 }
 
-
+  
